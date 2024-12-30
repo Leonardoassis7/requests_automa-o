@@ -2,38 +2,28 @@ import requests
 from bs4 import BeautifulSoup
 
 def requisicao():
-    # Realiza a requisição para a página principal da C&A
-    requisicao = requests.get("https://www.cea.com.br/tenis-casual-com-recortes-ace-branco-1073154-branco-1/p")
+    requisicao = requests.get("https://pages.hashtagtreinamentos.com/curso-basico-programacao?blog=1n4033rer&video=3zd56c2h7")
     
     # Verifica se a requisição foi bem-sucedida
     if requisicao.status_code == 200:
-        # bs4 retorna o html na requisicao.text
         soup = BeautifulSoup(requisicao.text, 'html.parser')
-        
-        # preco e a variavel que retorna o valor da class do preço do produto 
-        preco = soup.find('span', {'class': 'vtex-product-price-1-x-installmentsTotalValue vtex-product-price-1-x-installmentsTotalValue--pdp-installments'}).text 
-        if preco:
-            preco = preco.strip()   #preco é uma string
-        else:
-            preco = "Preço não encontrado"
 
-        imagem = soup.find('img', class_='cea-store-components-0-x-figure cea-store-components-0-x-figure--desktop')  
-        if imagem:
-            imagem_url = imagem['src']
-        else:
-            imagem_url = "Imagem não encontrada"
+        #Extrair informações da pagina inicial
+        info = soup.find('button',{'class':'general-button'})
+        if info:
+            info = info.text.strip() if info else "Botão não encontrado"
+            print(f'Botão Encontrado:{info}')
+            # Se o Botão for encontrado vai para proxima pagina 
+            url_proxima = "https://drive.google.com/drive/folders/1eUC-F2Kw9aaYz0j5Fo_GEx7QKBaRD7G8"
+            proxima = requests.get(url_proxima)
 
-        # Tente encontrar a avaliação do produto
-        avaliacao_produto = soup.find('div', {'class': 'cea-cea-store-theme-2-x-opinion__item'})
-        if avaliacao_produto:
-            avaliacao = avaliacao_produto.text.strip()
+            if proxima.status_code == 200:
+                print("Acessando a proxima pagina")
+                print(proxima.text[:500])   # Exibe os primeiros 500 caracteres da nova página
+            else:
+                print(f"Erro ao acessar a proxima pagina{proxima.status_code}")
         else:
-            avaliacao = "Avaliação não encontrada"
-
-        # Exibir as informações
-        print(f"Preço: {preco}")
-        print(f"Imagem: {imagem_url}")
-        print(f"Avaliação: {avaliacao}")
+            print("Botão Não encontrado")            
     else:
         print(f"Erro ao acessar a página, código de status: {requisicao.status_code}")
 
